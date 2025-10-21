@@ -11,15 +11,12 @@ from sklearn.pipeline import Pipeline
 from sklearn import set_config
 import joblib
 
-warnings.filterwarnings("ignore")
-
 
 def _safe_cols(df: pd.DataFrame, names):
     return [c for c in names if c in df.columns]
 
 
 def build_preprocessor(X: pd.DataFrame) -> ColumnTransformer:
-    """Build a ColumnTransformer using column names present in X."""
 
     default_num = _safe_cols(X, ["Age", "SibSp", "Parch", "Fare"])
 
@@ -75,11 +72,6 @@ def print_survival_correlations(df: pd.DataFrame):
 
 
 def create_pipeline(algo):
-    """
-    Keeps your original API:
-    returns a Pipeline(preprocessor -> classifier)
-    The preprocessor will be built later from the actual X_train columns.
-    """
 
     dummy_pre = ColumnTransformer([("pass", "passthrough", [])], remainder="passthrough")
     return Pipeline([

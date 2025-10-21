@@ -15,7 +15,6 @@ def build_parser():
 def main():
     args = build_parser().parse_args()
    
-    # Load feature dataset
     df = pd.read_csv(args.input)
    
     if 'Survived' not in df.columns:
@@ -24,19 +23,15 @@ def main():
     X = df.drop(columns=['Survived'])
     y = df['Survived']
    
-    # Load trained model
     with open(args.model, 'rb') as f:
         model = pickle.load(f)
    
-    # Predict
     y_pred = model.predict(X)
    
-    # Compute accuracy
     accuracy = accuracy_score(y, y_pred)
    
     print(f"Model accuracy: {accuracy:.4f}")
    
-    # Optionally save metrics to JSON
     if args.output:
         os.makedirs(os.path.dirname(args.output), exist_ok=True)
         metrics = {"accuracy": accuracy}

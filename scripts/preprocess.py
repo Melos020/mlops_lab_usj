@@ -1,8 +1,3 @@
-"""
-Data preprocessing script for Titanic survival prediction.
-Handles data loading, cleaning, and basic preprocessing steps.
-"""
-
 import argparse
 import warnings
 from pathlib import Path
