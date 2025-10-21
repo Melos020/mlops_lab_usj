@@ -13,17 +13,13 @@ def build_parser():
 def main():
     args = build_parser().parse_args()
    
-    # Load features
     df = pd.read_csv(args.input)
    
-    # Load trained model
     with open(args.model, 'rb') as f:
         model = pickle.load(f)
    
-    # Predict
     y_pred = model.predict(df)
    
-    # Save predictions
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
     df_pred = pd.DataFrame({"Prediction": y_pred})
     df_pred.to_csv(args.output, index=False)
