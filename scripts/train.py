@@ -1,15 +1,15 @@
-# scripts/train.py
-
 import argparse
 from pathlib import Path
 
 import pandas as pd
 
-from my_package.models.logreg_model import TitanicLogRegModel
+from my_package.models import TitanicLogRegModel, TitanicRFModel
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Train Titanic logistic regression model on featurized data")
+    parser = argparse.ArgumentParser(
+        description="Train Titanic model on featurized data"
+    )
     parser.add_argument(
         "--input_X",
         required=True,
@@ -23,7 +23,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--output",
         required=True,
-        help="Path to save trained model (e.g. models/titanic_logreg.joblib)",
+        help="Path to save trained model (e.g. models/titanic_logreg.joblib or models/titanic_rf.joblib)",
+    )
+    parser.add_argument(
+        "--backend",
+        choices=["logreg", "rf"],
+        default="logreg",
+        help="Which model backend to train: 'logreg' (Logistic Regression) or 'rf' (Random Forest).",
     )
     return parser
 
@@ -34,7 +40,7 @@ def main() -> None:
     X = pd.read_csv(args.input_X)
     y_df = pd.read_csv(args.input_y)
 
-    # NEW: keep only numeric columns (drop Name, Ticket, Cabin, etc.)
+    # Keep only numeric columns (drop Name, Ticket, Cabin, etc.)
     X = X.select_dtypes(include=["number"])
 
     if "Survived" in y_df.columns:
@@ -44,15 +50,19 @@ def main() -> None:
 
     print(f"Loaded X shape: {X.shape}, y shape: {y.shape}")
 
-    model = TitanicLogRegModel()
-    print("Fitting TitanicLogRegModel on featurized data...")
+    if args.backend == "logreg":
+        model = TitanicLogRegModel()
+        print("Fitting TitanicLogRegModel on featurized data...")
+    else:
+        model = TitanicRFModel()
+        print("Fitting TitanicRFModel on featurized data...")
+
     model.fit(X, y)
 
     out_path = Path(args.output)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     model.save(out_path)
     print(f"Trained model saved to {out_path}")
-
 
 
 if __name__ == "__main__":
